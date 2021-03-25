@@ -1,0 +1,16 @@
+html 
+    head 
+        title All People 
+    body
+        h1 All People
+        ul  
+            each person in people
+                li= person.name 
+                |
+                a(href="/person/" + person.id + "/delete")   Delete
+                br
+        form(action="/person" method="POST") 
+            label(for="name")  New Person
+            br
+            input(type="text" name="name")
+            input(type="submit")

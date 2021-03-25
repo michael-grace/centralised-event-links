@@ -1,0 +1,13 @@
+html 
+    head
+        title= event.name 
+    body 
+        form(action="/event/" + event.id, method="post") 
+            input(type="text" name="name" value=event.name)
+            br
+            input(type="url" name="link" value=event.link)
+            br
+            each person in people 
+                input(type="checkbox", name=person.person.id checked=person.onEvent)
+                label(for=person.person.id)= person.person.name
+                br

@@ -1,0 +1,11 @@
+html 
+    head 
+        title People
+    body 
+        a(href="/people") All People
+        br 
+        a(href="/events") All Events
+        br
+        each person in people
+            a(href="/person/" + person.id)= person.name
+            br
