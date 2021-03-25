@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "fs";
 
-import express from "express";
+import express, { urlencoded } from "express";
 import WebSocket from "ws";
 
 var dataStore;
@@ -25,6 +25,8 @@ app.set("views", "views");
 
 app.use("/static", express.static("static"));
 
+app.use(urlencoded({ extended: true }));
+
 app.get("/", (_, res) => {
     // Index Page, where users can click to their individual page
     res.render("index", { people: dataStore.people });
@@ -36,7 +38,17 @@ app.route("/people")
         res.render("allPeople", { people: dataStore.people });
     })
     .post((req, res) => {
-        // TODO
+        // Adding a new person to the system
+        let newPerson = {
+            id: dataStore.people.reduce((max, current) => {
+                return Math.max(max, current.id);
+            }, 0) + 1,
+            name: req.body.name,
+        };
+        dataStore.people.push(newPerson);
+        logMessage("Added Person: " + JSON.stringify(newPerson));
+
+        res.redirect("/people");
     });
 
 app.get("/person/:id", (req, res) => {
@@ -64,54 +76,122 @@ app.get("/person/:id", (req, res) => {
 app.get("/person/:id/delete", (req, res) => {
     // Deleting a person.
     let personID = parseInt(req.params.id);
+    logMessage("Deleting Person " + personID);
     dataStore.people = dataStore.people.filter((item) => item.id !== personID);
     res.redirect("/people");
 });
 
-app.route("/events")
-    .get((_, res) => {
-        // All events page, for getting to and deleting events
-        res.render("allEvents", { events: dataStore.events });
-    })
-    .post((req, res) => {
-        // TODO
-    });
+app.get("/events", (_, res) => {
+    // All events page, for getting to and deleting events
+    res.render("allEvents", { events: dataStore.events });
+});
 
-app.route("/event/:id")
+app.route("/event/:id?")
     .get((req, res) => {
         // Individual events page for editing, and assigning people
         let eventID = parseInt(req.params.id);
-        let event;
-        dataStore.events.forEach((element) => {
-            if (element.id == eventID) {
-                event = element;
-            }
-        });
-        if (event) {
-            let people = [];
-            dataStore.people.forEach((person) => {
-                // Creating the list of people
-                // checkmarked if they're assigned to this event
-                if (event.people.includes(person.id)) {
-                    people.push({
-                        person: person,
-                        onEvent: true,
-                    });
-                } else {
-                    people.push({
-                        person: person,
-                        onEvent: false,
-                    });
+        if (eventID) {
+            // Already existing event
+            let event;
+            dataStore.events.forEach((element) => {
+                if (element.id == eventID) {
+                    event = element;
                 }
             });
-            res.render("event", { event: event, people: people });
+            if (event) {
+                let people = [];
+                dataStore.people.forEach((person) => {
+                    // Creating the list of people
+                    // checkmarked if they're assigned to this event
+                    if (event.people.includes(person.id)) {
+                        people.push({
+                            person: person,
+                            onEvent: true,
+                        });
+                    } else {
+                        people.push({
+                            person: person,
+                            onEvent: false,
+                        });
+                    }
+                });
+                res.render("event", { event: event, people: people });
+            } else {
+                res.sendStatus(404);
+            }
         } else {
-            res.sendStatus(404);
+            // New Event
+            res.render("event", {
+                event: {},
+                people: dataStore.people.map((elem) => {
+                    return {
+                        person: elem,
+                        onEvent: false,
+                    };
+                }),
+            });
         }
     })
     .post((req, res) => {
-        // TODO
+        if (req.body.id == "") {
+            // New Event
+            let newEvent = {
+                id: dataStore.events.reduce((max, current) => {
+                    return Math.max(max, current.id);
+                }, 0) + 1,
+                name: req.body.name,
+                link: req.body.link,
+                people: Object.keys(req.body)
+                    .map((key) => {
+                        if (key.match(/person\d+/) && req.body[key] == "on") {
+                            return parseInt(key.split("person")[1]);
+                        }
+                    })
+                    .filter((elem) => {
+                        elem;
+                    }),
+            };
+            dataStore.events.push(newEvent);
+            logMessage("Created new event: " + JSON.stringify(newEvent));
+            res.redirect("/events");
+        } else {
+            // Editing Event
+            let eventID = parseInt(req.params.id);
+            let event;
+            dataStore.events.forEach((elem) => {
+                if (elem.id == eventID) {
+                    event = elem;
+                    return;
+                }
+            });
+            dataStore.events = dataStore.events.filter((event) => {
+                event.id != eventID;
+            });
+            event = {
+                id: eventID,
+                name: req.body.name,
+                link: req.body.link,
+                people: Object.keys(req.body)
+                    .map((key) => {
+                        if (key.match(/person\d+/) && req.body[key] == "on") {
+                            return parseInt(key.split("person")[1]);
+                        }
+                    })
+                    .filter((elem) => elem),
+            };
+            dataStore.events.push(event);
+            logMessage("Edited event: " + JSON.stringify(event));
+            res.redirect("/event/" + eventID);
+        }
     });
+
+app.get("/event/:id/delete", (req, res) => {
+    // Deleting an event.
+    let eventID = parseInt(req.params.id);
+    logMessage("Deleting Event " + eventID);
+    dataStore.events = dataStore.events.filter((item) => item.id !== eventID);
+    res.redirect("/events");
+});
 
 app.listen(process.env.PORT || 3000, () => {
     logMessage(`Started`);

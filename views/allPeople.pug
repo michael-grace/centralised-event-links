@@ -8,8 +8,7 @@ html
                 li= person.name 
                 |
                 a(href="/person/" + person.id + "/delete")   Delete
-                br
-        form(action="/person" method="POST") 
+        form(action="/people" method="POST") 
             label(for="name")  New Person
             br
             input(type="text" name="name")

@@ -6,4 +6,5 @@ html
         ul  
             each event in events
                 a(href="/event/" + event.id)= event.name
+                a(href="/event/" + event.id + "/delete")   Delete
                 br

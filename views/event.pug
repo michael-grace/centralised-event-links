@@ -3,11 +3,17 @@ html
         title= event.name 
     body 
         form(action="/event/" + event.id, method="post") 
+            input(type="hidden" name="id" value=event.id)
+            label(for="name") Event Name
             input(type="text" name="name" value=event.name)
             br
+            label(for="link") Link
             input(type="url" name="link" value=event.link)
             br
+            b Assigned People
+            br
             each person in people 
-                input(type="checkbox", name=person.person.id checked=person.onEvent)
-                label(for=person.person.id)= person.person.name
+                input(type="checkbox" name="person" + person.person.id checked=person.onEvent)
+                label(for="person" + person.person.id)= person.person.name
                 br
+            input(type="submit" value="Add Event")
