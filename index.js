@@ -208,14 +208,12 @@ app.route("/event/:id?")
 							return parseInt(key.split("person")[1]);
 						}
 					})
-					.filter((elem) => {
-						elem;
-					}),
+					.filter((elem) => elem),
 				superEvent: parseInt(req.body.superEvent),
 			};
 			dataStore.events.push(newEvent);
 			logMessage("Created new event: " + JSON.stringify(newEvent));
-			res.redirect("/events");
+			res.redirect("/event/" + newEvent.id);
 		} else {
 			// Editing Event
 			let eventID = parseInt(req.params.id);
