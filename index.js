@@ -118,7 +118,7 @@ app.route("/superevent/:id").get((req, res) => {
 	if (superEvent) {
 		let events = [];
 		dataStore.events.forEach((element) => {
-			if (element.superID == superID) {
+			if (element.superEvent == superID) {
 				events.push(element);
 			}
 		});
@@ -211,6 +211,7 @@ app.route("/event/:id?")
 					.filter((elem) => {
 						elem;
 					}),
+				superEvent: parseInt(req.body.superEvent),
 			};
 			dataStore.events.push(newEvent);
 			logMessage("Created new event: " + JSON.stringify(newEvent));
@@ -239,6 +240,7 @@ app.route("/event/:id?")
 						}
 					})
 					.filter((elem) => elem),
+				superEvent: parseInt(req.body.superEvent),
 			};
 			dataStore.events.push(event);
 			logMessage("Edited event: " + JSON.stringify(event));

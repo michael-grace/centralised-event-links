@@ -7,7 +7,7 @@ html
     body 
         div(class="container")
             h1 Event
-            form(action="/event/" + event.id, method="post") 
+            form(action="" method="post") 
                 input(type="hidden" name="id" value=event.id)
                 label(for="name") Event Name
                 input(type="text" name="name" value=event.name)
@@ -16,10 +16,10 @@ html
                 input(type="url" name="link" value=event.link)
                 br
                 b SuperEvent
-                select
+                select(name="superEvent")
                     option(value="") 
                     each superEvent in superEvents 
-                        if superEvent.id == event.id
+                        if superEvent.id == event.superEvent
                             option(value=superEvent.id selected)= superEvent.name
                         else 
                             option(value=superEvent.id)= superEvent.name
@@ -29,4 +29,4 @@ html
                     input(type="checkbox" name="person" + person.person.id checked=person.onEvent)
                     label(for="person" + person.person.id)= person.person.name
                     br
-                input(type="submit" value="Add Event")
+                input(type="submit")
