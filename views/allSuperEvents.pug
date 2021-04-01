@@ -1,0 +1,9 @@
+html 
+    head 
+        title All SuperEvents 
+    body
+        h1 All SuperEvents
+        ul  
+            each event in superEvents
+                a(href="/superevent/" + event.id)= event.name
+                br

@@ -1,12 +1,23 @@
 {
-    "people": [{
-        "id": 1,
-        "name": "Person McPersonFace"
-    }],
-    "events": [{
-        "id": 1,
-        "name": "Event McEventFace",
-        "link": "https://www.google.co.uk",
-        "people": [1]
-    }]
+	"people": [
+		{
+			"id": 1,
+			"name": "Person McPersonFace"
+		}
+	],
+	"events": [
+		{
+			"id": 1,
+			"superID": 1,
+			"name": "Event McEventFace",
+			"link": "https://www.google.co.uk",
+			"people": [1]
+		}
+	],
+	"superEvents": [
+		{
+			"id": 1,
+			"name": "Rowing"
+		}
+	]
 }
