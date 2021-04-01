@@ -6,8 +6,9 @@ html
         script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js") 
     body
         div(class="container")
+            a(href="/") Home
             h1 All People
-            table(class="table-striped")
+            table(class="table table-striped")
                 each person in people
                     tr
                         td= person.name 

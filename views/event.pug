@@ -6,27 +6,30 @@ html
         script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js") 
     body 
         div(class="container")
+            a(href="/") Home
             h1 Event
             form(action="" method="post") 
                 input(type="hidden" name="id" value=event.id)
-                label(for="name") Event Name
-                input(type="text" name="name" value=event.name)
-                br
-                label(for="link") Link
-                input(type="url" name="link" value=event.link)
-                br
-                b SuperEvent
-                select(name="superEvent")
-                    option(value="") 
-                    each superEvent in superEvents 
-                        if superEvent.id == event.superEvent
-                            option(value=superEvent.id selected)= superEvent.name
-                        else 
-                            option(value=superEvent.id)= superEvent.name
-                br
-                h4 Assigned People
-                each person in people 
-                    input(type="checkbox" name="person" + person.person.id checked=person.onEvent)
-                    label(for="person" + person.person.id)= person.person.name
-                    br
-                input(type="submit")
+                div(class="form-group")
+                    label(for="name") Event Name
+                    input(type="text" name="name" class="form-control" value=event.name)
+                div(class="form-group")
+                    label(for="link") Link
+                    input(type="url" name="link" class="form-control" value=event.link)
+                div(class="form-group")
+                    b SuperEvent
+                    select(name="superEvent" class="form-control")
+                        option(value="") 
+                        each superEvent in superEvents 
+                            if superEvent.id == event.superEvent
+                                option(value=superEvent.id selected)= superEvent.name
+                            else 
+                                option(value=superEvent.id)= superEvent.name
+                div(class="form-group")
+                    b Assigned People
+                    div(class="checkbox")
+                        each person in people 
+                            input(type="checkbox" name="person" + person.person.id checked=person.onEvent)
+                            label(for="person" + person.person.id)= person.person.name
+                            br
+                input(type="submit" class="btn btn-primary")
