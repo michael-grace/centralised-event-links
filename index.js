@@ -27,11 +27,16 @@ app.use("/static", express.static("static"));
 
 app.use(urlencoded({ extended: true }));
 
+// Index Page
 app.get("/", (_, res) => {
 	// Index Page, where users can click to their individual page
-	res.render("index", { people: dataStore.people });
+	res.render("index", {
+		people: dataStore.people,
+		superEvents: dataStore.superEvents,
+	});
 });
 
+// All People Page
 app.route("/people")
 	.get((_, res) => {
 		// All people page, where you can add and delete people
@@ -52,8 +57,8 @@ app.route("/people")
 		res.redirect("/people");
 	});
 
+// Individual persons page - the important page.
 app.get("/person/:id", (req, res) => {
-	// Individual persons page - the important page.
 	let personID = parseInt(req.params.id);
 	let person;
 	dataStore.people.forEach((element) => {
@@ -74,58 +79,71 @@ app.get("/person/:id", (req, res) => {
 	}
 });
 
+// Deleting a person.
 app.get("/person/:id/delete", (req, res) => {
-	// Deleting a person.
 	let personID = parseInt(req.params.id);
 	logMessage("Deleting Person " + personID);
 	dataStore.people = dataStore.people.filter((item) => item.id !== personID);
 	res.redirect("/people");
 });
 
-app.get("/superevents", (_, res) => {
-	res.render("allSuperEvents", { superEvents: dataStore.superEvents });
-});
-
-app.route("/superevent/:id?")
-	.get((req, res) => {
-		// Individual superevent page for getting links
-		let superID = parseInt(req.params.id);
-		if (superID) {
-			// Already existing superevent
-			let superEvent;
-			dataStore.superEvents.forEach((element) => {
-				if (element.id == superID) {
-					superEvent = element;
-				}
-			});
-			if (superEvent) {
-				let events = [];
-				dataStore.events.forEach((element) => {
-					if (element.superID == superID) {
-						events.push(element);
-					}
-				});
-				res.render("superEvent", {
-					superEvent: superEvent,
-					events: events,
-				});
-			} else {
-				res.sendStatus(404);
-			}
-		} else {
-			res.sendStatus(400);
-		}
+// All Superevents Page
+app.route("/superevents")
+	.get((_, res) => {
+		res.render("allSuperEvents", { superEvents: dataStore.superEvents });
 	})
-	.post((req, res) => {});
+	.post((req, res) => {
+		let newSuperEvent = {
+			id:
+				dataStore.superEvents.reduce((max, current) => {
+					return Math.max(max, current.id);
+				}, 0) + 1,
+			name: req.body.name,
+		};
+		dataStore.superEvents.push(newSuperEvent);
+		logMessage("Added Superevent: " + JSON.stringify(newSuperEvent));
 
-app.get("/events", (_, res) => {
-	// All events page, for getting to and deleting events
-	res.render("allEvents", { events: dataStore.events });
+		res.redirect("/superevents");
+	});
+
+// Individual superevent page for getting links
+app.route("/superevent/:id").get((req, res) => {
+	let superID = parseInt(req.params.id);
+	let superEvent;
+	dataStore.superEvents.forEach((element) => {
+		if (element.id == superID) {
+			superEvent = element;
+		}
+	});
+	if (superEvent) {
+		let events = [];
+		dataStore.events.forEach((element) => {
+			if (element.superID == superID) {
+				events.push(element);
+			}
+		});
+		res.render("superEvent", {
+			superEvent: superEvent,
+			events: events,
+		});
+	} else {
+		res.sendStatus(404);
+	}
 });
 
+// Deleting a Superevent
+app.get("/superevent/:id/delete", (req, res) => {
+	let superID = parseInt(req.params.id);
+	logMessage("Deleting Superevent " + superID);
+	dataStore.superEvents = dataStore.superEvents.filter(
+		(item) => item.id !== superID
+	);
+	res.redirect("/superevents");
+});
+
+// Individual events page for editing, and assigning people
 app.route("/event/:id?")
 	.get((req, res) => {
-		// Individual events page for editing, and assigning people
 		let eventID = parseInt(req.params.id);
 		if (eventID) {
 			// Already existing event
@@ -223,8 +241,8 @@ app.route("/event/:id?")
 		}
 	});
 
+// Deleting an event.
 app.get("/event/:id/delete", (req, res) => {
-	// Deleting an event.
 	let eventID = parseInt(req.params.id);
 	logMessage("Deleting Event " + eventID);
 	dataStore.events = dataStore.events.filter((item) => item.id !== eventID);

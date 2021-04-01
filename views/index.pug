@@ -2,10 +2,23 @@ html
     head 
         title People
     body 
-        a(href="/people") All People
+        table 
+            th People 
+            each person in people 
+                tr 
+                    td
+                        a(href="/person/" + person.id)= person.name
+
+        a(href="/people") Edit People
         br 
-        a(href="/events") All Events
+        table 
+            th Events 
+            each event in superEvents 
+                tr 
+                    td
+                        a(href="/superevent/" + event.id)= event.name
+
+        a(href="/superevents") Edit Events
         br
-        each person in people
-            a(href="/person/" + person.id)= person.name
-            br
+
+        a(href="/event") Add Link 
