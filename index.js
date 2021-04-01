@@ -170,7 +170,11 @@ app.route("/event/:id?")
 						});
 					}
 				});
-				res.render("event", { event: event, people: people });
+				res.render("event", {
+					event: event,
+					people: people,
+					superEvents: dataStore.superEvents,
+				});
 			} else {
 				res.sendStatus(404);
 			}
@@ -184,6 +188,7 @@ app.route("/event/:id?")
 						onEvent: false,
 					};
 				}),
+				superEvents: dataStore.superEvents,
 			});
 		}
 	})

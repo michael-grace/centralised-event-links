@@ -1,15 +1,21 @@
 html 
     head 
         title All People 
+        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css")
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js") 
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js") 
     body
-        h1 All People
-        ul  
-            each person in people
-                li= person.name 
-                |
-                a(href="/person/" + person.id + "/delete")   Delete
-        form(action="/people" method="POST") 
-            label(for="name")  New Person
+        div(class="container")
+            h1 All People
+            table(class="table-striped")
+                each person in people
+                    tr
+                        td= person.name 
+                        td
+                            a(href="/person/" + person.id + "/delete")   Delete Person 
             br
-            input(type="text" name="name")
-            input(type="submit")
+            form(action="/people" method="POST") 
+                label(for="name")  New Person
+                br
+                input(type="text" name="name")
+                input(type="submit")

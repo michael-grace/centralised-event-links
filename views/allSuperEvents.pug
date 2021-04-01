@@ -1,9 +1,22 @@
 html 
     head 
         title All SuperEvents 
+        link(rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css")
+        script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js") 
+        script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js") 
     body
-        h1 All SuperEvents
-        ul  
-            each event in superEvents
-                a(href="/superevent/" + event.id)= event.name
+        div(class="container")
+            h1 All SuperEvents
+            table(class="table-striped")
+                each event in superEvents
+                    tr
+                        td
+                            a(href="/superevent/" + event.id)= event.name
+                        td 
+                            a(href="/superevent/delete/" + event.id) Delete SuperEvent
+            br
+            form(action="/superevents" method="POST") 
+                label(for="name")  New SuperEvent
                 br
+                input(type="text" name="name")
+                input(type="submit")
