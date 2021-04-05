@@ -1,35 +1,53 @@
 const url = window.location.pathname.split("/");
 const personID = parseInt(url[url.length - 1]);
 
-const ws = new WebSocket("ws://192.168.1.123:3001");
+var ws;
+var allowedNotifs = false;
 
-ws.onmessage = function incoming(data) {
-    message = JSON.parse(data.data);
-    if (message.type == "message" && message.payload == "hello") {
-        ws.send(
-            JSON.stringify({
-                type: "offer",
-                payload: {
-                    personID: personID,
-                },
-            })
-        );
-        document.getElementById("connection").style.display = "none";
-    } else if (message.type == "callOut") {
-        let notif =
-            message.payload.caller +
-            " is calling you on " +
-            message.payload.event.name;
-        window.alert(notif);
-        new Notification("Ring Ring", {
-            body: notif,
-        });
-    }
-};
+if (Notification.permission === "granted") {
+    allowedNotifs = true;
+} else if (Notification.permission !== "denied") {
+    // Ask for Notification Permission
+    Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+            allowedNotifs = true;
+        }
+    });
+}
 
-ws.onclose = () => {
-    document.getElementById("connection").style.display = "block";
-};
+function connectToWS() {
+    ws = new WebSocket("ws://192.168.0.8:3001");
+
+    ws.onmessage = function incoming(data) {
+        message = JSON.parse(data.data);
+        if (message.type == "message" && message.payload == "hello") {
+            ws.send(
+                JSON.stringify({
+                    type: "offer",
+                    payload: {
+                        personID: personID,
+                    },
+                })
+            );
+            document.getElementById("connection").style.display = "none";
+        } else if (message.type == "callOut") {
+            let notif =
+                message.payload.caller +
+                " is calling you on " +
+                message.payload.event.name;
+            if (allowedNotifs) {
+                new Notification("Ring Ring", {
+                    body: notif,
+                });
+            }
+        }
+    };
+
+    ws.onclose = () => {
+        document.getElementById("connection").style.display = "block";
+        connectToWS(); // Try to Reconnect
+    };
+}
 
 const call = (eventID) => {
     ws.send(

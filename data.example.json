@@ -8,7 +8,7 @@
 	"events": [
 		{
 			"id": 1,
-			"superID": 1,
+			"superEvent": 1,
 			"name": "Event McEventFace",
 			"link": "https://www.google.co.uk",
 			"people": [1]
