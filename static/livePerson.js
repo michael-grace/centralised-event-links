@@ -60,3 +60,5 @@ const call = (eventID) => {
         })
     );
 };
+
+connectToWS();
